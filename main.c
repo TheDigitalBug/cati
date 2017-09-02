@@ -1,6 +1,8 @@
 
 
 #include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
 
@@ -43,9 +45,13 @@ typedef struct		s_rgb
 	int a;
 }					t_rgb;
 
-
-
-
+int	hexTo256(t_rgb rgb)
+{
+	int	r = (rgb.r < 75 ? 0 : (rgb.r-35) /40) * 6 * 6;
+	int	g = (rgb.g < 75 ? 0 : (rgb.g - 35 ) / 40) * 6;
+	int	b = (rgb.b < 75 ? 0 : (rgb.b - 35) / 40) + 16;
+	return(r+g+b);
+}
 
 
 int main(int argc, const char **argv)
@@ -54,12 +60,8 @@ int main(int argc, const char **argv)
 	int height;
 	int bytesPerPixel;
 	unsigned char *image;
-
- 
 	
-	
-	
-	image = stbi_load("s.png", &width, &height, &bytesPerPixel, 0);
+	image = stbi_load("w.png", &width, &height, &bytesPerPixel, 4);
 	if (!image)
 	{
 		puts("allocation failure or image is corrupt/invalid");
@@ -84,7 +86,7 @@ int main(int argc, const char **argv)
 	
 	y = 0;
 	int a = 0;
-	while(y < height)
+	while(y < height * bytesPerPixel)
 	{
 		x = 0;
 		
@@ -94,13 +96,13 @@ int main(int argc, const char **argv)
 			rgb[a].g = image[y*width + x + 1];
 			rgb[a].b = image[y*width + x + 2];
 			rgb[a].a = image[y*width + x + 3];
-//			printf("%d\n",y*width + x);
+	
 			a++;
 			x+=4;
 		}
 		y++;
-//		printf("\n");
 	}
+
 	
 	y = 0;
 	a = 0;
@@ -111,16 +113,15 @@ int main(int argc, const char **argv)
 		{
 			SDL_SetRenderDrawColor(sdl.renderer, rgb[a].r, rgb[a].g, rgb[a].b, rgb[a].a);
 			SDL_RenderDrawPoint(sdl.renderer, x, y);
+			printf("\x1b[0;48;2;%d;%d;%dm\u2001", rgb[a].r, rgb[a].g, rgb[a].b);
+
 			a++;
 			x++;
-			printf("a=`%d\n",a);
 		}
+		printf("\n");
 		y++;
 	}
-	
-	
-	
-	
+
 	
 	SDL_RenderPresent(sdl.renderer);
 	
@@ -134,28 +135,6 @@ int main(int argc, const char **argv)
 				stop = 1;
 		}
 	}
-
-	
-	
-	
-	
-//	int i = 0;
-//	
-//	while (i < width)
-//	{
-//		printf("r = %d\n", image[i++]);
-//		printf("g = %d\n", image[i++]);
-//		printf("b = %d\n", image[i++]);
-//		printf("a = %d\n", image[i++]);
-//	}
-//
-//	
-//	
-//	
-//	puts(argv[1]);
-//	printf("%s\n\n", image);
-//	
-//	
 	stbi_image_free(image);
 	return 0;
 }
