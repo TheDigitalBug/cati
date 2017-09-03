@@ -27,7 +27,19 @@
 
 # include <SDL2/SDL.h>
 
-# define H HEIG / 30
+
+
+
+#include <sys/ioctl.h> // get terminal window width
+
+int	getTerminalWidth(void)
+{
+	struct winsize screen_size;
+	
+	ioctl(0, TIOCGWINSZ, &screen_size);
+	printf("Screen width: %i \n", screen_size.ws_col);
+	return (screen_size.ws_col);
+}
 
 typedef struct		s_sdl
 {
@@ -56,12 +68,14 @@ int	hexTo256(t_rgb rgb)
 
 int main(int argc, const char **argv)
 {
-	int width;
-	int height;
-	int bytesPerPixel;
-	unsigned char *image;
+	int				width;
+	int				height;
+	int				bytesPerPixel;
+	unsigned char	*image;
+	int				terminalWidth;
+	double			ratio;
 	
-	image = stbi_load("w.png", &width, &height, &bytesPerPixel, 4);
+	image = stbi_load(argv[1], &width, &height, &bytesPerPixel, 4);
 	if (!image)
 	{
 		puts("allocation failure or image is corrupt/invalid");
@@ -71,12 +85,13 @@ int main(int argc, const char **argv)
 	printf("bytesPerPixel=%d\n", bytesPerPixel);
 	printf("width=%d\n", width);
 	printf("height=%d\n", height);
-	
-	
+	terminalWidth = getTerminalWidth();
+	ratio = ceil((double) width / terminalWidth);
+	printf("ratio=%f\n", ratio);
 	SDL_Init(SDL_INIT_EVERYTHING);
 	
 	t_sdl sdl;
-	sdl.window = SDL_CreateWindow("Pacman", 0, 0, width, height, SDL_WINDOW_OPENGL);
+	sdl.window = SDL_CreateWindow("test window", 0, 0, width, height, SDL_WINDOW_OPENGL);
 	sdl.renderer = SDL_CreateRenderer(sdl.window, -1, SDL_RENDERER_ACCELERATED);
 	SDL_SetRenderDrawColor(sdl.renderer, 0, 0, 0, 255);
 	SDL_RenderClear(sdl.renderer);
@@ -103,7 +118,6 @@ int main(int argc, const char **argv)
 		y++;
 	}
 
-	
 	y = 0;
 	a = 0;
 	while(y < height)
@@ -114,12 +128,13 @@ int main(int argc, const char **argv)
 			SDL_SetRenderDrawColor(sdl.renderer, rgb[a].r, rgb[a].g, rgb[a].b, rgb[a].a);
 			SDL_RenderDrawPoint(sdl.renderer, x, y);
 			printf("\x1b[0;48;2;%d;%d;%dm\u2001", rgb[a].r, rgb[a].g, rgb[a].b);
+			printf("\033[0m");
 
 			a++;
-			x++;
+			x+=ratio;
 		}
 		printf("\n");
-		y++;
+		y+=ratio;
 	}
 
 	
