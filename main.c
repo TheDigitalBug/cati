@@ -75,6 +75,8 @@ int main(int argc, const char **argv)
 	int				terminalWidth;
 	double			ratio;
 	
+	argc = 2;
+	
 	image = stbi_load(argv[1], &width, &height, &bytesPerPixel, 4);
 	if (!image)
 	{
@@ -96,28 +98,24 @@ int main(int argc, const char **argv)
 	SDL_SetRenderDrawColor(sdl.renderer, 0, 0, 0, 255);
 	SDL_RenderClear(sdl.renderer);
 	
+
+	
+	int totalLen = width * height * bytesPerPixel;
+	int pos = 0;
+	int a = 0;
+	while(pos < totalLen)
+	{
+		rgb[a].r = image[pos];
+		rgb[a].g = image[pos + 1];
+		rgb[a].b = image[pos + 2];
+		rgb[a].a = image[pos + 3];
+		pos += 4;
+		a++;
+	}
+	
+	
 	int x;
 	int y;
-	
-	y = 0;
-	int a = 0;
-	while(y < height * bytesPerPixel)
-	{
-		x = 0;
-		
-		while(x < width)
-		{
-			rgb[a].r = image[y*width + x];
-			rgb[a].g = image[y*width + x + 1];
-			rgb[a].b = image[y*width + x + 2];
-			rgb[a].a = image[y*width + x + 3];
-	
-			a++;
-			x+=4;
-		}
-		y++;
-	}
-
 	y = 0;
 	a = 0;
 	while(y < height)
@@ -127,20 +125,49 @@ int main(int argc, const char **argv)
 		{
 			SDL_SetRenderDrawColor(sdl.renderer, rgb[a].r, rgb[a].g, rgb[a].b, rgb[a].a);
 			SDL_RenderDrawPoint(sdl.renderer, x, y);
-			printf("\x1b[0;48;2;%d;%d;%dm\u2001", rgb[a].r, rgb[a].g, rgb[a].b);
-			printf("\033[0m");
-
+			
+			for(int k = 0; k < 2; k++)
+			{
+				printf("\x1b[0;48;2;%d;%d;%dm\u2003", rgb[a].r, rgb[a].g, rgb[a].b);
+				printf("\033[0m");
+			}
+			
+			
+			
 			a++;
-			x+=ratio;
+			x++;
 		}
 		printf("\n");
-		y+=ratio;
+		y++;
 	}
+//	printf("x=%d y=%d\n", x, y);
+
+//	Unicode Character 'EM SPACE' (U+2003)
+//	mutton - nominally, a space equal to the type size in points may scale by the condensation factor of a font
+
+
+//	y = 0;
+//	a = 0;
+//	while(y < height)
+//	{
+//		x = 0;
+//		while(x < width)
+//		{
+//			SDL_SetRenderDrawColor(sdl.renderer, rgb[a].r, rgb[a].g, rgb[a].b, rgb[a].a);
+//			SDL_RenderDrawPoint(sdl.renderer, x, y);
+//
+//
+//			a++;
+//			x+=ratio;
+//		}
+//
+//		y++;
+//	}
 
 	
 	SDL_RenderPresent(sdl.renderer);
 	
-	
+
 	int stop = 0;
 	while (!stop)
 	{
