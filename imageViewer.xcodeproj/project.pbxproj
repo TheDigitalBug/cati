@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		8A0A38CA1F5B0FB7001127D9 /* main.c in Sources */ = {isa = PBXBuildFile; fileRef = 8A0A38C81F5B0FB7001127D9 /* main.c */; };
+		8A0A38CA1F5B0FB7001127D9 /* cati.c in Sources */ = {isa = PBXBuildFile; fileRef = 8A0A38C81F5B0FB7001127D9 /* cati.c */; };
 		8A0A38CC1F5B0FCA001127D9 /* SDL2.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8A0A38CB1F5B0FCA001127D9 /* SDL2.framework */; };
 /* End PBXBuildFile section */
 
@@ -24,11 +24,12 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		8A0A38C81F5B0FB7001127D9 /* main.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = main.c; sourceTree = "<group>"; };
+		8A0A38C81F5B0FB7001127D9 /* cati.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = cati.c; sourceTree = "<group>"; };
 		8A0A38C91F5B0FB7001127D9 /* stb_image.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = stb_image.h; sourceTree = "<group>"; };
 		8A0A38CB1F5B0FCA001127D9 /* SDL2.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = SDL2.framework; sourceTree = "<group>"; };
 		8A54BB991F5AD9E800FF2DCA /* imageViewer */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = imageViewer; sourceTree = BUILT_PRODUCTS_DIR; };
 		D28093101F5D7A79007878DC /* stb_image_resize.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = stb_image_resize.h; sourceTree = "<group>"; };
+		D28093111F5D8C8F007878DC /* cati.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = cati.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -46,9 +47,10 @@
 		8A54BB901F5AD9E800FF2DCA = {
 			isa = PBXGroup;
 			children = (
-				D28093101F5D7A79007878DC /* stb_image_resize.h */,
+				D28093111F5D8C8F007878DC /* cati.h */,
 				8A54BB9A1F5AD9E800FF2DCA /* Products */,
-				8A0A38C81F5B0FB7001127D9 /* main.c */,
+				8A0A38C81F5B0FB7001127D9 /* cati.c */,
+				D28093101F5D7A79007878DC /* stb_image_resize.h */,
 				8A0A38C91F5B0FB7001127D9 /* stb_image.h */,
 				8A54BBA41F5AF06500FF2DCA /* Frameworks */,
 			);
@@ -127,7 +129,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				8A0A38CA1F5B0FB7001127D9 /* main.c in Sources */,
+				8A0A38CA1F5B0FB7001127D9 /* cati.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
