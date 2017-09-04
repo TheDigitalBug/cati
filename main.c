@@ -6,8 +6,8 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
 
-
-
+ #define STB_IMAGE_RESIZE_IMPLEMENTATION
+#include "stb_image_resize.h"
 
 // Basic usage (see HDR discussion below for HDR usage):
 //    int x,y,n;
@@ -32,13 +32,14 @@
 
 #include <sys/ioctl.h> // get terminal window width
 
-int	getTerminalWidth(void)
+void	getTerminalWidth(int *terminalHeight, int *terminalWidth)
 {
 	struct winsize screen_size;
 	
 	ioctl(0, TIOCGWINSZ, &screen_size);
 	printf("Screen width: %i \n", screen_size.ws_col);
-	return (screen_size.ws_col);
+	*terminalWidth = screen_size.ws_col;
+	*terminalHeight = screen_size.ws_row;
 }
 
 typedef struct		s_sdl
@@ -68,28 +69,74 @@ int	hexTo256(t_rgb rgb)
 
 int main(int argc, const char **argv)
 {
+	int				widthOrig;
+	int				heightOrig;
+	int				bytesPerPixelOrig;
+	unsigned char	*imageOrig;
+	
 	int				width;
 	int				height;
 	int				bytesPerPixel;
 	unsigned char	*image;
+	
+	
 	int				terminalWidth;
-	double			ratio;
+	int				terminalHeight;
+	double			ratioOrig;
 	
 	argc = 2;
 	
-	image = stbi_load(argv[1], &width, &height, &bytesPerPixel, 4);
-	if (!image)
+
+	
+	imageOrig = stbi_load(argv[1], &widthOrig, &heightOrig, &bytesPerPixelOrig, 4);
+	if (!imageOrig)
 	{
 		puts("allocation failure or image is corrupt/invalid");
 		exit(0);
 	}
+
+	printf("bytesPerPixel=%d\n", bytesPerPixelOrig);
+	printf("width=%d\n", widthOrig);
+	printf("height=%d\n", heightOrig);
+	getTerminalWidth(&terminalHeight, &terminalWidth);
+	
+
+	
+	
+	ratioOrig  = (double) widthOrig / heightOrig;
+	printf("ratio=%f\n", ratioOrig);
+	
+	
+	if (widthOrig > (terminalWidth / 2))
+	{
+		width = terminalWidth / 2;
+		height = (double)width / ratioOrig;
+	}
+	else
+	{
+		width = widthOrig;
+		height = heightOrig;
+	}
+	
+	
+	
+	image = (unsigned char	*)malloc(sizeof(unsigned char) * width * height * bytesPerPixelOrig);
+	
+	stbir_resize_uint8_srgb( imageOrig , widthOrig , heightOrig , 0,
+							image, width, height, 0,
+							bytesPerPixelOrig , 0  , 0);
+	
+	bytesPerPixel = bytesPerPixelOrig;
+	
+	
+	
+
+	printf("New width=%d\n", width);
+	printf("New height=%d\n", height);
+	
 	t_rgb	*rgb = (t_rgb*)malloc(sizeof(t_rgb) * width*height);
-	printf("bytesPerPixel=%d\n", bytesPerPixel);
-	printf("width=%d\n", width);
-	printf("height=%d\n", height);
-	terminalWidth = getTerminalWidth();
-	ratio = ceil((double) width / terminalWidth);
-	printf("ratio=%f\n", ratio);
+
+
 	SDL_Init(SDL_INIT_EVERYTHING);
 	
 	t_sdl sdl;
@@ -109,7 +156,7 @@ int main(int argc, const char **argv)
 		rgb[a].g = image[pos + 1];
 		rgb[a].b = image[pos + 2];
 		rgb[a].a = image[pos + 3];
-		pos += 4;
+		pos += bytesPerPixelOrig;
 		a++;
 	}
 	
@@ -126,11 +173,11 @@ int main(int argc, const char **argv)
 			SDL_SetRenderDrawColor(sdl.renderer, rgb[a].r, rgb[a].g, rgb[a].b, rgb[a].a);
 			SDL_RenderDrawPoint(sdl.renderer, x, y);
 			
-			for(int k = 0; k < 2; k++)
-			{
-				printf("\x1b[0;48;2;%d;%d;%dm\u2003", rgb[a].r, rgb[a].g, rgb[a].b);
+			if (bytesPerPixelOrig == 4)
+				printf("\x1b[0;48;2;%d;%d;%d;%dm  ", rgb[a].r, rgb[a].g, rgb[a].b, rgb[a].a);
+			else if (bytesPerPixelOrig == 3)
+				printf("\x1b[0;48;2;%d;%d;%dm  ", rgb[a].r, rgb[a].g, rgb[a].b);
 				printf("\033[0m");
-			}
 			
 			
 			
@@ -140,29 +187,6 @@ int main(int argc, const char **argv)
 		printf("\n");
 		y++;
 	}
-//	printf("x=%d y=%d\n", x, y);
-
-//	Unicode Character 'EM SPACE' (U+2003)
-//	mutton - nominally, a space equal to the type size in points may scale by the condensation factor of a font
-
-
-//	y = 0;
-//	a = 0;
-//	while(y < height)
-//	{
-//		x = 0;
-//		while(x < width)
-//		{
-//			SDL_SetRenderDrawColor(sdl.renderer, rgb[a].r, rgb[a].g, rgb[a].b, rgb[a].a);
-//			SDL_RenderDrawPoint(sdl.renderer, x, y);
-//
-//
-//			a++;
-//			x+=ratio;
-//		}
-//
-//		y++;
-//	}
 
 	
 	SDL_RenderPresent(sdl.renderer);
