@@ -18,12 +18,17 @@
 
 typedef struct		s_rgb
 {
-	int	r;
-	int g;
-	int b;
-	int a;
+	int				r;
+	int				g;
+	int				b;
+	int				a;
 }					t_rgb;
 
+
+typedef struct		s_flag
+{
+	int				trueColor;	
+}					t_flag;
 
 typedef struct		s_winSize
 {
