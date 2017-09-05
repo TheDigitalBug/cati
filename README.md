@@ -1,7 +1,7 @@
 # Project Name : cati
 
 # Info:
-Show images at terminal witch supports true colors. JPEG PNG BMP
+Show images at terminal witch supports true colors. PNG
 
 
 #
