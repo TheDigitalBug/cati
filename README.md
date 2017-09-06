@@ -18,5 +18,7 @@ $> ./cati image.png -o  - original size of image
 
 
 #
+true color:
 ![cati](/cati000.png?raw=true "cati")
+terminal color:
 ![cati](/cati001.png?raw=true "cati")
