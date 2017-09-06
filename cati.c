@@ -2,19 +2,16 @@
 #include "cati.h"
 
 // get terminal app size
-
 void				getTerminalSize(t_winSize *terminalSize)
 {
 	struct winsize screen_winSize;
 
 	ioctl(0, TIOCGWINSZ, &screen_winSize);
-	printf("Screen width: %i \n", screen_winSize.ws_col);
 	terminalSize->width = screen_winSize.ws_col;
 	terminalSize->height = screen_winSize.ws_row;
 }
 
 // get image info - size, array of collor
-
 unsigned char	*readImage(char **argv, int *bytesPerPixel, t_winSize *size, t_option option)
 {
 	t_winSize		sizeOrig;
@@ -86,7 +83,7 @@ t_option			optionParser(char **argv)
 	return(option);
 }
 
-void				drawImage(int bytesPerPixel, unsigned char *image, t_winSize size, t_option option)
+void			drawImage(int bytesPerPixel, unsigned char *image, t_winSize size, t_option option)
 {
 	t_rgb	*rgb;
 	int		totalLen;
