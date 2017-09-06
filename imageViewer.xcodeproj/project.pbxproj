@@ -8,7 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		8A0A38CA1F5B0FB7001127D9 /* cati.c in Sources */ = {isa = PBXBuildFile; fileRef = 8A0A38C81F5B0FB7001127D9 /* cati.c */; };
-		8A0A38CC1F5B0FCA001127D9 /* SDL2.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8A0A38CB1F5B0FCA001127D9 /* SDL2.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -37,7 +36,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				8A0A38CC1F5B0FCA001127D9 /* SDL2.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -230,7 +228,6 @@
 			buildSettings = {
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
-					"$(PROJECT_DIR)/imageViewer",
 					"$(PROJECT_DIR)",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -242,7 +239,6 @@
 			buildSettings = {
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
-					"$(PROJECT_DIR)/imageViewer",
 					"$(PROJECT_DIR)",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";

@@ -15,7 +15,7 @@ void				getTerminalSize(t_winSize *terminalSize)
 
 // get image info - size, array of collor
 
-unsigned char	*readImage(char **argv, int *bytesPerPixel, t_winSize *size)
+unsigned char	*readImage(char **argv, int *bytesPerPixel, t_winSize *size, t_option option)
 {
 	t_winSize		sizeOrig;
 	unsigned char	*imageOrig;
@@ -30,25 +30,30 @@ unsigned char	*readImage(char **argv, int *bytesPerPixel, t_winSize *size)
 		puts("allocation failure or image is corrupt/invalid");
 		exit(0);
 	}
+	
 	ratioOrig  = (double) sizeOrig.width / sizeOrig.height;
 	
 	getTerminalSize(&terminalSize);
 	
-	if (sizeOrig.width > terminalSize.width)
-	{
-		size->width = terminalSize.width;
-		size->height = (double)size->width / ratioOrig;
-		
-		image = (unsigned char	*)malloc(sizeof(unsigned char) * size->width * size->height * (*bytesPerPixel));
-		stbir_resize_uint8_srgb(imageOrig, sizeOrig.width, sizeOrig.height, 0,
-								image, size->width, size->height, 0,
-								*bytesPerPixel, 0, 0);
-	}
-	else
+	if (((sizeOrig.width <= terminalSize.width) && (sizeOrig.height <= terminalSize.height)) || option.resizeToTerminal == 1)
 	{
 		size->width = sizeOrig.width;
 		size->height = sizeOrig.height;
 		return(imageOrig);
+	}
+	else
+	{
+		size->width = terminalSize.width;
+		size->height = (double)terminalSize.height / ratioOrig;
+		image = (unsigned char	*)malloc(sizeof(unsigned char) * size->width * size->height * (*bytesPerPixel));
+		if (!image)
+		{
+			puts("allocation failure or image is corrupt/invalid");
+			exit(0);
+		}
+		stbir_resize_uint8_srgb(imageOrig, sizeOrig.width, sizeOrig.height, 0,
+								image, size->width, size->height, 0,
+								*bytesPerPixel, 0, 0);
 	}
 	stbi_image_free(imageOrig);
 	return(image);
@@ -62,23 +67,26 @@ int				hexTo256(t_rgb rgb)
 	return(r+g+b);
 }
 
-t_flag			flagParser(char **argv)
+t_option			optionParser(char **argv)
 {
-	t_flag	flag;
+	t_option	option;
 	int		i;
 	
-	flag.trueColor = 0;
+	option.trueColor = 0;
+	option.resizeToTerminal = 0;
 	i = 2;
 	while(argv[i])
 	{
 		if(strcmp(argv[i], "-t") == 0)
-			flag.trueColor = 1;
+			option.trueColor = 1;
+		if(strcmp(argv[i], "-o") == 0)
+			option.resizeToTerminal = 1;
 		i++;
 	}
-	return(flag);
+	return(option);
 }
 
-void				drawImage(int bytesPerPixel, unsigned char *image, t_winSize size, t_flag flag)
+void				drawImage(int bytesPerPixel, unsigned char *image, t_winSize size, t_option option)
 {
 	t_rgb	*rgb;
 	int		totalLen;
@@ -101,14 +109,13 @@ void				drawImage(int bytesPerPixel, unsigned char *image, t_winSize size, t_fla
 		pos += bytesPerPixel;
 		i++;
 	}
-	
-	y = 0;
+
 	i = 0;
 	for (y = 0; y < size.height; y++)
 	{
 		for (x = 0; x < size.width; x++)
 		{
-			if (flag.trueColor == 1)
+			if (option.trueColor == 1)
 			{
 				if (bytesPerPixel == 4)
 					printf("\x1b[0;48;2;%d;%d;%d;%dm ", rgb[i].r, rgb[i].g, rgb[i].b, rgb[i].a);
@@ -121,7 +128,6 @@ void				drawImage(int bytesPerPixel, unsigned char *image, t_winSize size, t_fla
 			}
 			else
 				printf("\x1b[48;05;%dm ", hexTo256(rgb[i]));
-			
 			i++;
 		}
 		printf("\033[0m\n");
@@ -134,16 +140,18 @@ int				main(int argc, char **argv)
 	t_winSize		size;
 	int				bytesPerPixel;
 	unsigned char	*image;
-	t_flag			flag;
+	t_option			option;
 
 	if(argc == 1)
 	{
-		puts("Usage: ./cati image.png");
+		printf("Usage: ./cati image.png [-options]\n");
+		printf("     -t  - true color (works only if your console accepts true color env)\n");
+		printf("     -o  - original resolution of image\n");
 		exit(0);
 	}
-	flag = flagParser(argv);
-	image = readImage(argv, &bytesPerPixel, &size);
-	drawImage(bytesPerPixel, image, size, flag);
+	option = optionParser(argv);
+	image = readImage(argv, &bytesPerPixel, &size, option);
+	drawImage(bytesPerPixel, image, size, option);
 	stbi_image_free(image);
 	return 0;
 }

@@ -25,10 +25,11 @@ typedef struct		s_rgb
 }					t_rgb;
 
 
-typedef struct		s_flag
+typedef struct		s_option
 {
-	int				trueColor;	
-}					t_flag;
+	int				trueColor;
+	int				resizeToTerminal;
+}					t_option;
 
 typedef struct		s_winSize
 {
@@ -36,4 +37,9 @@ typedef struct		s_winSize
 	int				width;
 }					t_winSize;
 
+void				getTerminalSize(t_winSize *terminalSize);
+unsigned char		*readImage(char **argv, int *bytesPerPixel, t_winSize *size, t_option option);
+int					hexTo256(t_rgb rgb);
+t_option			optionParser(char **argv);
+void				drawImage(int bytesPerPixel, unsigned char *image, t_winSize size, t_option option);
 #endif
