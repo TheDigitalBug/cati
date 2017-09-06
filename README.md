@@ -19,6 +19,8 @@ $> ./cati image.png -o  - original size of image
 ```
 
 #
+original image:
+![cati](/apple.png?raw=true "cati")
 true color:
 ![cati](/cati000.png?raw=true "cati")
 terminal color:
