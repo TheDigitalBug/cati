@@ -13,9 +13,10 @@ $> ./cati image.png
 ```
 
 # options:
+```
 $> ./cati image.png -t  - true color
 $> ./cati image.png -o  - original size of image
-
+```
 
 #
 true color:
